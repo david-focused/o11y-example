@@ -1,20 +1,29 @@
 package com.example.inventory_service.service;
 
 import org.springframework.stereotype.Service;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 @Service
 public class InventoryService {
-    private static final Logger logger = Logger.getLogger(InventoryService.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(InventoryService.class);
 
     public Integer getInventory(Long id) {
-        logger.info("Getting inventory for product ID: " + id);
+        try {
+            MDC.put("productId", id.toString());
+            MDC.put("action", "getInventory");
+            logger.info("Getting inventory");
 
-        Integer quantity = simulateDbLookup();
+            Integer quantity = simulateDbLookup();
 
-        logger.info("Available quantity: " + quantity);
+            MDC.put("quantity", quantity.toString());
+            logger.info("Inventory retrieved");
 
-        return quantity;
+            return quantity;
+        } finally {
+            MDC.clear();
+        }
     }
 
     private Integer simulateDbLookup() {

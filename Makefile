@@ -3,7 +3,7 @@
 MINIKUBE_ENV := eval $(minikube docker-env)
 
 # Current version tag - update this for each tagged commit
-CURRENT_TAG := v0.1-unstructured-logging
+CURRENT_TAG := v0.2-structured-logging
 
 .DEFAULT_GOAL := help
 

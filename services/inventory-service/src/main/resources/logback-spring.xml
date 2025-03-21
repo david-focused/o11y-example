@@ -3,7 +3,13 @@
     <springProperty scope="context" name="springAppName" source="spring.application.name"/>
     <property name="HOSTNAME" value="${HOSTNAME:-unknown}" />
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
-    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+    
+    <!-- Console appender with pattern layout for structured logging -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %mdc%n</pattern>
+        </encoder>
+    </appender>
     
     <appender name="ASYNC_LOKI" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="LOKI" />
@@ -21,8 +27,9 @@
                 <pattern>app=${HOSTNAME},service=${springAppName},level=%level</pattern>
             </label>
             <message>
-                <pattern>%msg %ex</pattern>
+                <pattern>%msg %mdc %ex</pattern>
             </message>
+            <sortByTime>true</sortByTime>
         </format>
     </appender>
 

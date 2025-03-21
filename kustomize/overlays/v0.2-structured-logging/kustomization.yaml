@@ -1,0 +1,12 @@
+resources:
+  - ../../base
+  - loki.yaml
+  - loki-config.yaml
+
+images:
+  - name: order-service
+    newTag: v0.2-structured-logging
+  - name: shipping-service
+    newTag: v0.2-structured-logging
+  - name: inventory-service
+    newTag: v0.2-structured-logging

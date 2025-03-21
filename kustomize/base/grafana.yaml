@@ -13,6 +13,8 @@ data:
         version: 1
         editable: true
         isDefault: true
+        jsonData:
+          maxLines: 1000
 
 ---
 apiVersion: apps/v1

@@ -7,37 +7,43 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 @Service
 public class ShippingService {
-    private static final Logger logger = Logger.getLogger(ShippingService.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(ShippingService.class);
 
     public ShippingResponse processShippingRequest(ShippingRequest request) {
-        logger.info("Processing shipping request for product: " + request.getProductId() + ", quantity: "
-                + request.getQuantity());
-
         try {
-            // oops - forgot to add shipping method to log
-            logger.info(
-                    "Calling third-party shipping provider for product: " + request.getProductId() + ", quantity: "
-                            + request.getQuantity());
-            String trackingNumber = simulateThirdPartyShippingServiceCall(request);
-            logger.info("Third-party shipping provider call completed. Tracking number: " + trackingNumber);
+            MDC.put("productId", request.getProductId().toString());
+            MDC.put("quantity", request.getQuantity().toString());
+            MDC.put("shippingMethod", request.getShippingMethod().toString());
+            MDC.put("requestId", UUID.randomUUID().toString());
+            MDC.put("action", "processShipping");
+            
+            logger.info("Processing shipping request");
 
-            ShippingResponse response = new ShippingResponse(trackingNumber);
+            try {
+                logger.info("Calling third-party shipping provider");
+                String trackingNumber = simulateThirdPartyShippingServiceCall(request);
+                MDC.put("trackingNumber", trackingNumber);
+                logger.info("Shipping request processed successfully");
 
-            logger.info("Shipping request processed successfully: " + response);
-            return response;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error processing shipping request", e);
-            throw e;
+                return new ShippingResponse(trackingNumber);
+            } catch (Exception e) {
+                MDC.put("errorType", "shippingProviderError");
+                logger.error("Error processing shipping request", e);
+                throw e;
+            }
+        } finally {
+            MDC.clear();
         }
     }
 
     private String simulateThirdPartyShippingServiceCall(ShippingRequest request) {
-        try {
+        try {        
             if (request.getQuantity() > 75 && request.getShippingMethod() == ShippingMethod.NEXT_DAY) {
                 // very slow shipping: Delaying response for 10 seconds for high quantity and NEXT_DAY shipping
                 TimeUnit.SECONDS.sleep(10);

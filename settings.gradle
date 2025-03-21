@@ -1,0 +1,6 @@
+rootProject.name = 'o11y-example'
+
+include 'common-domain'
+include 'services:order-service'
+include 'services:inventory-service'
+include 'services:shipping-service'

@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "management.endpoints.web.exposure.include",
+      "type": "java.lang.String",
+      "description": "Endpoints to be exposed for Spring Boot Actuator."
+    },
+    {
+      "name": "management.endpoint.health.show-details",
+      "type": "java.lang.String",
+      "description": "Whether to show detailed health information."
+    },
+    {
+      "name": "management.metrics.export.prometheus.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Prometheus metrics export."
+    }
+  ]
+}

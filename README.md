@@ -31,7 +31,6 @@ Structured logging added to each service
 Metrics added for each service
 
 - **Prometheus**: Collects and processes metrics
-- **Grafana**: Visualize metrics
 
 #### v0.4:
 Tracing added for each service

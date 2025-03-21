@@ -3,7 +3,7 @@
 MINIKUBE_ENV := eval $(minikube docker-env)
 
 # Current version tag - update this for each tagged commit
-CURRENT_TAG := v0.2-structured-logging
+CURRENT_TAG := v0.3-metrics
 
 .DEFAULT_GOAL := help
 
@@ -50,6 +50,8 @@ start-port-forwards:
 	kubectl port-forward svc/order-service 8080:8080 > /dev/null 2>&1 &
 	@echo "Port forwarding grafana to localhost:3000..."
 	kubectl port-forward svc/grafana 3000:3000 > /dev/null 2>&1 &
+	@echo "Port forwarding prometheus to localhost:9090..."
+	kubectl port-forward svc/prometheus 9090:9090 > /dev/null 2>&1 &
 
 stop-port-forwards:
 	@echo "Stopping all kubectl port-forward processes..."

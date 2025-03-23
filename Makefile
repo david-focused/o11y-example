@@ -3,7 +3,7 @@
 MINIKUBE_ENV := eval $(minikube docker-env)
 
 # Current version tag - update this for each tagged commit
-CURRENT_TAG := v0.3-metrics
+CURRENT_TAG := v0.4-otel
 
 .DEFAULT_GOAL := help
 
@@ -48,10 +48,8 @@ clean: stop-port-forwards
 start-port-forwards:
 	@echo "Port forwarding order-service to localhost:8080..."
 	kubectl port-forward svc/order-service 8080:8080 > /dev/null 2>&1 &
-	@echo "Port forwarding grafana to localhost:3000..."
-	kubectl port-forward svc/grafana 3000:3000 > /dev/null 2>&1 &
-	@echo "Port forwarding prometheus to localhost:9090..."
-	kubectl port-forward svc/prometheus 9090:9090 > /dev/null 2>&1 &
+	@echo "Port forwarding jaeger to localhost:16686..."
+	kubectl port-forward svc/jaeger 16686:16686 > /dev/null 2>&1 &
 
 stop-port-forwards:
 	@echo "Stopping all kubectl port-forward processes..."

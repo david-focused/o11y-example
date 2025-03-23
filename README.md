@@ -119,6 +119,10 @@ The repository includes a test script to easily send various types of requests t
 
 It provides a menu to select different test scenarios to see how each layer of Observability helps to identify and resolve or prevent issues.
 
+## 7. Access Jaeger
+
+Open your browser and navigate to `http://localhost:16686`.
+
 ## Cleanup
 
 ```bash

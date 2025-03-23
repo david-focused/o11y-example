@@ -50,19 +50,6 @@ check_services() {
   return 0
 }
 
-show_grafana_link() {
-  echo -e "${YELLOW}View logs in Grafana:${NC} ${BLUE}http://localhost:3000${NC}"
-  echo -e "Use username: ${BOLD}admin${NC} and password: ${BOLD}admin${NC}"
-}
-
-show_grafana_info() {
-  echo -e "${BOLD}${YELLOW}=== Loki Queries ===${NC}"
-  echo -e "• ${BLUE}{service=\"order-service\"}${NC}"
-  echo -e "• ${BLUE}{service=\"shipping-service\"}${NC}"
-  echo -e "• ${BLUE}{service=\"inventory-service\"}${NC}"
-  echo -e "• ${BLUE}{service=~\".*service\"} |= \"error\"${NC}"
-}
-
 ###########################################
 # TEST SCENARIO FUNCTIONS
 ###########################################
@@ -138,9 +125,6 @@ run_happy_path() {
   echo -e "${GREEN}Creating normal order (ID: $product_id)...${NC}"
   create_order "$product_id" 20 "GROUND"
   echo
-  
-  echo -e "${YELLOW}Loki query:${NC} ${BLUE}{service=~\".*service\"} |= \"$product_id\"${NC}"
-
 }
 
 run_order_service_error() {
@@ -152,8 +136,6 @@ run_order_service_error() {
   echo -e "${RED}Using high quantity (105) and GROUND shipping${NC}"
   create_order "$product_id" 105 "GROUND"
   echo
-  
-  echo -e "${YELLOW}Loki query:${NC} ${BLUE}{service=\"order-service\"} |= \"$product_id\" |= \"error\"${NC}"
 }
 
 run_shipping_timeout() {
@@ -165,9 +147,6 @@ run_shipping_timeout() {
   echo -e "${YELLOW}Using quantity (80) and NEXT_DAY shipping${NC}"
   create_order "$product_id" 80 "NEXT_DAY"
   echo
-  
-  echo -e "${YELLOW}Loki query:${NC} ${BLUE}{service=\"shipping-service\"} |= \"$product_id\"${NC}"
-  echo -e "${YELLOW}Loki query:${NC} ${BLUE}{service=\"order-service\"} |= \"$product_id\" |= \"error\"${NC}"
 }
 
 run_random_orders() {
@@ -199,11 +178,6 @@ run_random_orders() {
   
   echo -e "\n${GREEN}Completed sending $total_requests requests${NC}"
   echo
-  
-  echo -e "${YELLOW}Loki queries to check:${NC}"
-  echo -e "• ${BLUE}{service=~\".*service\"}${NC}"
-  echo -e "• ${BLUE}{service=~\".*service\"} |= \"error\"${NC}"
-
 }
 
 
@@ -220,7 +194,6 @@ show_menu() {
   echo "2) Order Service Error Test (Invalid quantity)"
   echo "3) Shipping Timeout Test"
   echo "4) Random Orders Test (100 requests)"
-  echo "5) Show Grafana link"
   echo "0) Exit"
   echo
   read -p "Enter your choice [0-5]: " choice
@@ -230,7 +203,6 @@ show_menu() {
     2) clear; run_order_service_error; press_to_continue ;;
     3) clear; run_shipping_timeout; press_to_continue ;;
     4) clear; run_random_orders; press_to_continue ;;
-    5) show_grafana_link; press_to_continue ;;
     0) echo "Exiting..."; exit 0 ;;
     *) echo -e "${YELLOW}Invalid option. Please try again.${NC}"; press_to_continue ;;
   esac
@@ -248,8 +220,6 @@ if ! check_services; then
   exit 1
 fi
 
-show_grafana_link
-show_grafana_info
 echo
 
 while true; do

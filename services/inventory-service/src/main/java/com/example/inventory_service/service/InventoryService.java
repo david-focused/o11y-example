@@ -1,31 +1,28 @@
 package com.example.inventory_service.service;
 
 import org.springframework.stereotype.Service;
+
+import io.opentelemetry.instrumentation.annotations.WithSpan;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 @Service
 public class InventoryService {
     private static final Logger logger = LoggerFactory.getLogger(InventoryService.class);
 
+    @WithSpan
     public Integer getInventory(Long id) {
-        try {
-            MDC.put("productId", id.toString());
-            MDC.put("action", "getInventory");
-            logger.info("Getting inventory");
+        logger.info("Getting inventory for productId: {}", id);
 
-            Integer quantity = simulateDbLookup();
+        Integer quantity = simulateDbLookup();
 
-            MDC.put("quantity", quantity.toString());
-            logger.info("Inventory retrieved");
+        logger.info("Inventory retrieved: {}", quantity);
 
-            return quantity;
-        } finally {
-            MDC.clear();
-        }
+        return quantity;
     }
 
+    @WithSpan
     private Integer simulateDbLookup() {
         return 100;
     }

@@ -13,6 +13,12 @@ java {
 	}
 }
 
+dependencyManagement {
+  imports {
+    mavenBom("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:2.14.0")
+  }
+}
+
 repositories {
 	mavenCentral()
 }
@@ -20,9 +26,14 @@ repositories {
 dependencies {
 	implementation project(':common-domain')
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.github.loki4j:loki-logback-appender:1.4.0'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.micrometer:micrometer-registry-prometheus'
+
+	// OpenTelemetry dependencies
+	implementation 'io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter'
+	implementation 'io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.14.0'
+	implementation 'io.opentelemetry:opentelemetry-api:1.48.0'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

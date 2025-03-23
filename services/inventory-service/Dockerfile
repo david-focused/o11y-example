@@ -11,6 +11,10 @@ RUN ./services/inventory-service/gradlew clean bootJar
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-COPY --from=build /app/services/inventory-service/build/libs/inventory-service-0.0.1-SNAPSHOT.jar /app/inventory-service.jar
+COPY --from=build /app/services/inventory-service/build/libs/inventory-service-0.0.1-SNAPSHOT.jar app.jar
+
+# Download OpenTelemetry Java agent
+RUN curl -L https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.14.0/opentelemetry-javaagent.jar -o opentelemetry-javaagent.jar
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "inventory-service.jar"]
+ENTRYPOINT ["java", "-javaagent:/app/opentelemetry-javaagent.jar", "-jar", "app.jar"]

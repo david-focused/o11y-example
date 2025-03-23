@@ -5,43 +5,44 @@ import com.example.common.dto.ShippingResponse;
 import com.example.common.model.ShippingMethod;
 import org.springframework.stereotype.Service;
 
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
+import io.opentelemetry.instrumentation.annotations.SpanAttribute;
+
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 @Service
 public class ShippingService {
     private static final Logger logger = LoggerFactory.getLogger(ShippingService.class);
 
-    public ShippingResponse processShippingRequest(ShippingRequest request) {
+    @WithSpan
+    public ShippingResponse processShippingRequest(@SpanAttribute("shippingRequest") ShippingRequest request) {
+        logger.info("Processing shipping request for productId: {}, quantity: {}, method: {}", 
+                   request.getProductId(), request.getQuantity(), request.getShippingMethod());
+
+        Span currentSpan = Span.current();
+        currentSpan.setAttribute("productId", request.getProductId());
+        currentSpan.setAttribute("quantity", request.getQuantity());
+        currentSpan.setAttribute("shippingMethod", request.getShippingMethod().name());
+
+
         try {
-            MDC.put("productId", request.getProductId().toString());
-            MDC.put("quantity", request.getQuantity().toString());
-            MDC.put("shippingMethod", request.getShippingMethod().toString());
-            MDC.put("requestId", UUID.randomUUID().toString());
-            MDC.put("action", "processShipping");
-            
-            logger.info("Processing shipping request");
+            logger.info("Calling third-party shipping provider");
+            String trackingNumber = simulateThirdPartyShippingServiceCall(request);
+            logger.info("Shipping request processed successfully with tracking number: {}", trackingNumber);
 
-            try {
-                logger.info("Calling third-party shipping provider");
-                String trackingNumber = simulateThirdPartyShippingServiceCall(request);
-                MDC.put("trackingNumber", trackingNumber);
-                logger.info("Shipping request processed successfully");
-
-                return new ShippingResponse(trackingNumber);
-            } catch (Exception e) {
-                MDC.put("errorType", "shippingProviderError");
-                logger.error("Error processing shipping request", e);
-                throw e;
-            }
-        } finally {
-            MDC.clear();
+            return new ShippingResponse(trackingNumber);
+        } catch (Exception e) {
+            currentSpan.recordException(e);
+            logger.error("Error processing shipping request", e);
+            throw e;
         }
     }
 
+    @WithSpan
     private String simulateThirdPartyShippingServiceCall(ShippingRequest request) {
         try {        
             if (request.getQuantity() > 75 && request.getShippingMethod() == ShippingMethod.NEXT_DAY) {

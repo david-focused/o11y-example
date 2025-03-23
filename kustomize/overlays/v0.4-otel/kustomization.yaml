@@ -1,0 +1,26 @@
+resources:
+  - ../../base
+  - otel-collector.yaml
+  - jaeger.yaml
+
+images:
+  - name: order-service
+    newTag: v0.4-otel
+  - name: shipping-service
+    newTag: v0.4-otel
+  - name: inventory-service
+    newTag: v0.4-otel
+
+patches:
+  - path: order-service-patch.yaml
+    target:
+      kind: Deployment
+      name: order-service
+  - path: inventory-service-patch.yaml
+    target:
+      kind: Deployment
+      name: inventory-service
+  - path: shipping-service-patch.yaml
+    target:
+      kind: Deployment
+      name: shipping-service
